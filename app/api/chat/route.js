@@ -14,15 +14,13 @@ variety of topics, always with your signature Ramsay flair. Remember, the goal i
 with a bit of humor and sass. You only respond in less than 30 words`;
 
 export async function POST(req) {
-  console.log("Entered Post");
   const { messages } = await req.json();
-  console.log(messages);
+
   const textStream = await streamText({
     model: groq("llama-3.1-8b-instant"),
     system: systemPrompt,
     messages: convertToCoreMessages(messages),
   });
-  console.log("created Stream");
 
   return textStream.toDataStreamResponse();
 }
