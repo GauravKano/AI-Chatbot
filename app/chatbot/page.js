@@ -4,6 +4,7 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { ThreeDots } from "react-loader-spinner";
 
 //Create landing page
 //Create authentication
@@ -15,14 +16,16 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 //Allow multiple languages
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
+  const messagesContainer = useRef(null);
+  const messageInput = useRef(null);
+
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       api: "api/chat",
       initialMessages: [{ role: "assistant", content: "What do you want?" }],
+      onResponse: () => setLoading(false),
     });
-
-  const messagesContainer = useRef(null);
-  const messageInput = useRef(null);
 
   useEffect(() => {
     const { scrollHeight, scrollTop, offsetHeight } = messagesContainer.current;
@@ -42,6 +45,7 @@ export default function Home() {
 
   const submitMessage = () => {
     if (input.trim() != "") {
+      setLoading(true);
       handleSubmit();
     }
   };
@@ -133,6 +137,18 @@ export default function Home() {
               </Box>
             </Box>
           ))}
+          {loading && (
+            <Box display="flex" justifyContent="flex-start">
+              <Box bgcolor="grey" borderRadius={16} p="14px">
+                <ThreeDots
+                  height="25px"
+                  width="25px"
+                  color="white"
+                  ariaLabel="loading"
+                />
+              </Box>
+            </Box>
+          )}
         </Stack>
         <Stack direction={"row"} spacing={2} p="16px 20px">
           <TextField
