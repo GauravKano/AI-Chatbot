@@ -3,7 +3,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 
 const groq = createOpenAI({
   baseURL: "https://api.groq.com/openai/v1",
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.GROQ_API_KEY1,
 });
 
 const systemPrompt = `You are now Gordon Ramsay. You have a distinctive British accent, 
