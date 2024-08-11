@@ -3,7 +3,7 @@
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeftLong, FaAnglesDown } from "react-icons/fa6";
 import { ThreeDots } from "react-loader-spinner";
 import { auth } from "@/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
@@ -12,17 +12,26 @@ import { useRouter } from "next/navigation";
 export default function Chatbot() {
   //Init the States, Refs, and Routers
   const [loading, setLoading] = useState(false);
+  const [showScroll, setShowScroll] = useState(false);
   const messagesContainer = useRef(null);
   const messageInput = useRef(null);
   const router = useRouter();
 
   //Handle the API
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "api/chat",
-      initialMessages: [{ role: "assistant", content: "What do you want?" }],
-      onResponse: () => setLoading(false),
-    });
+  const {
+    messages,
+    setMessages,
+    input,
+    setInput,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    stop,
+  } = useChat({
+    api: "api/chat",
+    initialMessages: [{ role: "assistant", content: "What do you want?" }],
+    onResponse: () => setLoading(false),
+  });
 
   //Create Auto Scroll
   useEffect(() => {
@@ -70,6 +79,43 @@ export default function Chatbot() {
     return () => unsubscribe();
   }, [router]);
 
+  //Handle Clear Message
+  const clearMessage = () => {
+    stop();
+    setLoading(false);
+    setMessages([{ role: "assistant", content: "What do you want?" }]);
+    setShowScroll(false);
+    setInput("");
+  };
+
+  //Add event listener for Message Scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollHeight, scrollTop, offsetHeight } =
+        messagesContainer.current;
+
+      if (scrollHeight - 50 >= scrollTop + offsetHeight) {
+        setShowScroll(true);
+      } else {
+        setShowScroll(false);
+      }
+    };
+
+    messagesContainer.current?.addEventListener("scroll", handleScroll);
+
+    return () =>
+      messagesContainer.current?.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  //Handle the Scroll Click
+  const scrollClick = () => {
+    const { scrollHeight } = messagesContainer.current;
+    messagesContainer.current?.scrollTo({
+      top: scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <Box
       width="100vw"
@@ -96,81 +142,136 @@ export default function Chatbot() {
           <Typography display="flex" alignItems="center" gap="10px" ml="10px">
             <FaArrowLeftLong /> Go back
           </Typography>
-          <Button
-            sx={{
-              fontSize: "14px",
-              color: "#FFF",
-              bgcolor: "#00B2FF",
-              p: "8px 16px",
-              "&:hover": {
-                bgcolor: "#0075FF",
-              },
-              borderRadius: "8px",
-            }}
-            onClick={onSignOut}
+          <Stack
+            direction={"row"}
+            alignItems="center"
+            justifyContent="center"
+            gap="15px"
           >
-            Sign-Out
-          </Button>
+            <Button
+              sx={{
+                fontSize: "14px",
+                color: "#FFF",
+                bgcolor: "#00B2FF",
+                p: "8px 20px",
+                "&:hover": {
+                  bgcolor: "#0075FF",
+                },
+                borderRadius: "8px",
+              }}
+              onClick={clearMessage}
+            >
+              Clear
+            </Button>
+            <Button
+              sx={{
+                fontSize: "14px",
+                color: "#FFF",
+                bgcolor: "#00B2FF",
+                p: "8px 16px",
+                "&:hover": {
+                  bgcolor: "#0075FF",
+                },
+                borderRadius: "8px",
+              }}
+              onClick={onSignOut}
+            >
+              Sign-Out
+            </Button>
+          </Stack>
         </Box>
 
         {/* Messages Display */}
-        <Stack
-          ref={messagesContainer}
-          p="16px 20px"
-          direction={"column"}
+        <Box
           borderBottom="1px solid black"
-          spacing={2}
-          overflow="auto"
           maxHeight="100%"
           flexGrow={1}
-          sx={{
-            "&::-webkit-scrollbar": {
-              width: "8px",
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: "#f1f1f1",
-              borderRadius: "10px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#c1c1c1",
-              borderRadius: "10px",
-              "&:hover": {
-                backgroundColor: "#a1a1a1",
-              },
-            },
-          }}
+          overflow="hidden"
+          position="relative"
         >
-          {messages.map((message, index) => (
-            <Box
-              key={index}
-              display="flex"
-              justifyContent={
-                message.role === "user" ? "flex-end" : "flex-start"
-              }
-            >
+          <Stack
+            ref={messagesContainer}
+            p="16px 20px"
+            direction={"column"}
+            spacing={2}
+            height="100%"
+            overflow="auto"
+            sx={{
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f1f1f1",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#c1c1c1",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#a1a1a1",
+                },
+              },
+            }}
+          >
+            {messages.map((message, index) => (
               <Box
-                bgcolor={message.role === "user" ? "#00B2FF" : "grey"}
-                color="white"
-                borderRadius={16}
-                p={2}
+                key={index}
+                display="flex"
+                justifyContent={
+                  message.role === "user" ? "flex-end" : "flex-start"
+                }
               >
-                {message.content}
-              </Box>
-            </Box>
-          ))}
-          {loading && (
-            <Box display="flex" justifyContent="flex-start">
-              <Box bgcolor="grey" borderRadius={16} p="14px">
-                <ThreeDots
-                  height="25px"
-                  width="25px"
+                <Box
+                  bgcolor={message.role === "user" ? "#00B2FF" : "grey"}
                   color="white"
-                  ariaLabel="loading"
-                />
+                  borderRadius="25px"
+                  maxWidth="75%"
+                  p={2.5}
+                >
+                  {message.content}
+                </Box>
               </Box>
+            ))}
+            {loading && (
+              <Box display="flex" justifyContent="flex-start">
+                <Box bgcolor="grey" borderRadius={16} p="14px">
+                  <ThreeDots
+                    height="25px"
+                    width="25px"
+                    color="white"
+                    ariaLabel="loading"
+                  />
+                </Box>
+              </Box>
+            )}
+          </Stack>
+
+          {/* Show Scroll Button */}
+          {showScroll && !isLoading && (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              bgcolor="#424242"
+              onClick={scrollClick}
+              sx={{
+                boxShadow: "0px 0px 3px black",
+                position: "absolute",
+                bottom: "20px",
+                right: "25px",
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                zIndex: 10,
+                cursor: "pointer",
+              }}
+            >
+              <FaAnglesDown style={{ color: "white" }} />
             </Box>
           )}
-        </Stack>
+        </Box>
+
+        {/* Message Feature */}
         <Stack direction={"row"} spacing={2} p="16px 20px">
           <TextField
             ref={messageInput}
