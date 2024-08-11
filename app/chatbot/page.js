@@ -9,7 +9,7 @@ import { auth } from "@/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default function Chatbot() {
   //Init the States, Refs, and Routers
   const [loading, setLoading] = useState(false);
   const messagesContainer = useRef(null);

@@ -20,7 +20,6 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { FaXmark, FaEye, FaEyeSlash } from "react-icons/fa6";
 
-//Create authentication
 //Link go back and log out buttons
 //Create middleware for the chat
 //Create landing page
@@ -29,7 +28,7 @@ import { FaXmark, FaEye, FaEyeSlash } from "react-icons/fa6";
 //Make shift+enter create a new line in the message
 //Allow multiple languages
 
-const page = () => {
+const Login = () => {
   //Init States, Refs, and Routers
   const router = useRouter();
   const [emailInput, setEmailInput] = useState("");
@@ -246,4 +245,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Login;

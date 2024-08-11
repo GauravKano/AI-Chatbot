@@ -20,7 +20,7 @@ import { auth, googleProvider } from "@/firebase";
 import { FcGoogle } from "react-icons/fc";
 import { FaXmark } from "react-icons/fa6";
 
-const page = () => {
+const Register = () => {
   const router = useRouter();
   const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
@@ -232,4 +232,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Register;
