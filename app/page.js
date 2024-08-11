@@ -237,7 +237,7 @@ const Login = () => {
 
           {/* Register Redirection */}
           <Typography mt="35px" fontSize="14px">
-            Don't have an Account? <Link href="/register">Register</Link>
+            Don&apos;t have an Account? <Link href="/register">Register</Link>
           </Typography>
         </Stack>
       </Stack>
