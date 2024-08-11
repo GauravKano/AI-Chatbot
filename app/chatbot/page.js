@@ -5,21 +5,18 @@ import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { ThreeDots } from "react-loader-spinner";
-
-//Create landing page
-//Create authentication
-//Link go back and log out buttons
-//Create middleware for the chat
-//Add feature to change system prompt
-//Put Name at nav
-//Make shift+enter create a new line in the message
-//Allow multiple languages
+import { auth } from "@/firebase";
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  //Init the States, Refs, and Routers
   const [loading, setLoading] = useState(false);
   const messagesContainer = useRef(null);
   const messageInput = useRef(null);
+  const router = useRouter();
 
+  //Handle the API
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       api: "api/chat",
@@ -27,6 +24,7 @@ export default function Home() {
       onResponse: () => setLoading(false),
     });
 
+  //Create Auto Scroll
   useEffect(() => {
     const { scrollHeight, scrollTop, offsetHeight } = messagesContainer.current;
     if (scrollHeight >= scrollTop + offsetHeight) {
@@ -37,18 +35,40 @@ export default function Home() {
     }
   }, [messages]);
 
+  //Auto Focus on the Message Input
   useEffect(() => {
     if (!isLoading) {
       messageInput.current?.querySelector("textarea:first-child")?.focus();
     }
   }, [isLoading]);
 
+  //Handle Submit of the Message Input
   const submitMessage = () => {
     if (input.trim() != "") {
       setLoading(true);
       handleSubmit();
     }
   };
+
+  //Handle User Sign Out
+  const onSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Handle Change in User
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   return (
     <Box
@@ -87,6 +107,7 @@ export default function Home() {
               },
               borderRadius: "8px",
             }}
+            onClick={onSignOut}
           >
             Sign-Out
           </Button>

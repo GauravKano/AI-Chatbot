@@ -2,84 +2,71 @@
 import {
   Box,
   Stack,
-  TextField,
   Typography,
+  TextField,
   Button,
-  InputAdornment,
+  Divider,
 } from "@mui/material";
-import { Divider } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { auth, googleProvider } from "@/firebase";
 import {
   onAuthStateChanged,
-  signInWithEmailAndPassword,
   signInWithPopup,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth";
+import { auth, googleProvider } from "@/firebase";
 import { FcGoogle } from "react-icons/fc";
-import { FaXmark, FaEye, FaEyeSlash } from "react-icons/fa6";
-
-//Create authentication
-//Link go back and log out buttons
-//Create middleware for the chat
-//Create landing page
-//Add feature to change system prompt
-//Put Name at nav
-//Make shift+enter create a new line in the message
-//Allow multiple languages
+import { FaXmark } from "react-icons/fa6";
 
 const page = () => {
-  //Init States, Refs, and Routers
   const router = useRouter();
   const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("Error with Sign In");
+  const [errorMessage, setErrorMessage] = useState("Error with Sign Up");
+  const [emailVerify, setEmailVerify] = useState(false);
 
-  //Change Show Password
-  const changeShowPassword = () => {
-    setShowPassword(!showPassword);
+  //Handle Google Login
+  const onGoogleLogin = async () => {
+    try {
+      setEmailVerify(false);
+      const userInfo = await signInWithPopup(auth, googleProvider);
+      setShowError(false);
+    } catch (error) {
+      setErrorMessage("Error with Google Sign In");
+      setShowError(true);
+      console.log(error);
+    }
   };
 
-  //Handle Email and Passwork Submit
+  //Handle Submit of Sign up
   const onSubmit = async () => {
     try {
-      const userInfo = await signInWithEmailAndPassword(
+      const userInfo = await createUserWithEmailAndPassword(
         auth,
         emailInput,
         passwordInput
       );
       setShowError(false);
 
-      if (userInfo.user?.emailVerified === false) {
-        setErrorMessage("Email Verification Needed");
-        setShowError(true);
-      }
+      const user = userInfo.user;
+      await sendEmailVerification(user);
+      setEmailVerify(true);
     } catch (error) {
+      setEmailVerify(false);
       if (error.code == "auth/invalid-email") {
         setErrorMessage("Enter a Valid Email");
       } else if (error.code == "auth/missing-password") {
         setErrorMessage("Please Enter a Password");
-      } else if (error.code == "auth/invalid-credential") {
-        setErrorMessage("Invalid Email or Password");
+      } else if (error.code == "auth/email-already-in-use") {
+        setErrorMessage("Email Already In Use");
+      } else if (error.code == "auth/weak-password") {
+        setErrorMessage("Password is Too Weak");
       } else {
-        setErrorMessage("Error with Sign In");
+        setErrorMessage("Error with Sign Up");
       }
-
-      setShowError(true);
-      console.log(error);
-    }
-  };
-
-  //Handle Google Login
-  const onGoogleLogin = async () => {
-    try {
-      const userInfo = await signInWithPopup(auth, googleProvider);
-      setShowError(false);
-    } catch (error) {
-      setErrorMessage("Error with Google Sign In");
       setShowError(true);
       console.log(error);
     }
@@ -129,10 +116,35 @@ const page = () => {
             fontWeight="500"
             fontFamily={"'Poppins', sans-serif"}
           >
-            Login
+            Register
           </Typography>
 
-          {/* Error Message */}
+          {/* Show Verify Email */}
+          {emailVerify && (
+            <Box
+              width="100%"
+              bgcolor="rgb(0, 255, 0, 0.2)"
+              border="1.5px solid green"
+              borderRadius="10px"
+              p="8px 10px"
+              textAlign="center"
+              display="flex"
+              alignItems="center"
+            >
+              <Typography width="100%" fontSize="15px">
+                Email Verification Sent
+              </Typography>
+
+              <FaXmark
+                style={{ color: "green", cursor: "pointer" }}
+                onClick={() => {
+                  setEmailVerify(false);
+                }}
+              />
+            </Box>
+          )}
+
+          {/* Show Error */}
           {showError && (
             <Box
               width="100%"
@@ -166,37 +178,11 @@ const page = () => {
             }}
           />
           <TextField
-            type={showPassword ? "text" : "password"}
             placeholder="Password"
             sx={{ width: "100%" }}
             value={passwordInput}
             onChange={(e) => {
               setPasswordInput(e.target.value);
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  {showPassword ? (
-                    <FaEyeSlash
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                      }}
-                      onClick={changeShowPassword}
-                    />
-                  ) : (
-                    <FaEye
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                      }}
-                      onClick={changeShowPassword}
-                    />
-                  )}
-                </InputAdornment>
-              ),
             }}
           />
 
@@ -214,11 +200,11 @@ const page = () => {
             }}
             onClick={onSubmit}
           >
-            Sign In
+            Sign Up
           </Button>
 
           <Divider sx={{ width: "100%", fontSize: "15px" }}>or</Divider>
-          {/* Google Login */}
+          {/* Google Sign In */}
           <Stack
             direction={"row"}
             justifyContent="center"
@@ -236,9 +222,9 @@ const page = () => {
             <Typography>Sign In with Google</Typography>
           </Stack>
 
-          {/* Register Redirection */}
+          {/* Login Redirection */}
           <Typography mt="35px" fontSize="14px">
-            Don't have an Account? <Link href="/register">Register</Link>
+            Already have an Account? <Link href="/">Login</Link>
           </Typography>
         </Stack>
       </Stack>
