@@ -8,11 +8,14 @@ import { ThreeDots } from "react-loader-spinner";
 import { auth } from "@/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { systemPrompt } from "../page";
 
 export default function Chatbot() {
   //Init the States, Refs, and Routers
+  const chatBotInfo = { ...systemPrompt };
   const [loading, setLoading] = useState(false);
   const [showScroll, setShowScroll] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
   const messagesContainer = useRef(null);
   const messageInput = useRef(null);
   const router = useRouter();
@@ -29,18 +32,46 @@ export default function Chatbot() {
     stop,
   } = useChat({
     api: "api/chat",
-    initialMessages: [{ role: "assistant", content: "What do you want?" }],
+    initialMessages: [
+      { role: "system", content: chatBotInfo.prompt },
+      { role: "assistant", content: chatBotInfo.firstMessage },
+    ],
     onResponse: () => setLoading(false),
   });
 
+  //Handle Change in User
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setShowLoading(true);
+      if (!user || !user.emailVerified) {
+        router.push("/login");
+      } else {
+        if (
+          !chatBotInfo.name ||
+          !chatBotInfo.prompt ||
+          !chatBotInfo.firstMessage
+        ) {
+          router.push("/");
+        } else {
+          setShowLoading(false);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
   //Create Auto Scroll
   useEffect(() => {
-    const { scrollHeight, scrollTop, offsetHeight } = messagesContainer.current;
-    if (scrollHeight >= scrollTop + offsetHeight) {
-      messagesContainer.current?.scrollTo({
-        top: scrollHeight,
-        behavior: "smooth",
-      });
+    if (messagesContainer.current) {
+      const { scrollHeight, scrollTop, offsetHeight } =
+        messagesContainer.current;
+      if (scrollHeight >= scrollTop + offsetHeight) {
+        messagesContainer.current?.scrollTo({
+          top: scrollHeight,
+          behavior: "smooth",
+        });
+      }
     }
   }, [messages]);
 
@@ -59,6 +90,15 @@ export default function Chatbot() {
     }
   };
 
+  // Handle Go Back Button
+  const onGoBack = () => {
+    try {
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //Handle User Sign Out
   const onSignOut = async () => {
     try {
@@ -68,43 +108,37 @@ export default function Chatbot() {
     }
   };
 
-  //Handle Change in User
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
   //Handle Clear Message
   const clearMessage = () => {
     stop();
     setLoading(false);
-    setMessages([{ role: "assistant", content: "What do you want?" }]);
+    setMessages([
+      { role: "system", content: chatBotInfo.prompt },
+      { role: "assistant", content: chatBotInfo.firstMessage },
+    ]);
     setShowScroll(false);
     setInput("");
   };
 
   //Add event listener for Message Scroll
   useEffect(() => {
-    const handleScroll = () => {
-      const { scrollHeight, scrollTop, offsetHeight } =
-        messagesContainer.current;
+    if (messagesContainer.current) {
+      const handleScroll = () => {
+        const { scrollHeight, scrollTop, offsetHeight } =
+          messagesContainer.current;
 
-      if (scrollHeight - 50 >= scrollTop + offsetHeight) {
-        setShowScroll(true);
-      } else {
-        setShowScroll(false);
-      }
-    };
+        if (scrollHeight - 50 >= scrollTop + offsetHeight) {
+          setShowScroll(true);
+        } else {
+          setShowScroll(false);
+        }
+      };
 
-    messagesContainer.current?.addEventListener("scroll", handleScroll);
+      messagesContainer.current.addEventListener("scroll", handleScroll);
 
-    return () =>
-      messagesContainer.current?.removeEventListener("scroll", handleScroll);
+      return () =>
+        messagesContainer.current?.removeEventListener("scroll", handleScroll);
+    }
   }, []);
 
   //Handle the Scroll Click
@@ -115,6 +149,25 @@ export default function Chatbot() {
       behavior: "smooth",
     });
   };
+
+  if (showLoading) {
+    return (
+      <Box
+        width="100vw"
+        height="100vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <ThreeDots
+          height="200px"
+          width="200px"
+          color="black"
+          ariaLabel="loading"
+        />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -132,6 +185,7 @@ export default function Chatbot() {
         border="1px solid black"
         borderRadius="10px"
       >
+        {/* NavBar */}
         <Box
           p="10px 15px"
           borderBottom="1px solid black"
@@ -139,7 +193,14 @@ export default function Chatbot() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography display="flex" alignItems="center" gap="10px" ml="10px">
+          <Typography
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            ml="10px"
+            sx={{ cursor: "pointer" }}
+            onClick={onGoBack}
+          >
             <FaArrowLeftLong /> Go back
           </Typography>
           <Stack
@@ -213,25 +274,28 @@ export default function Chatbot() {
               },
             }}
           >
-            {messages.map((message, index) => (
-              <Box
-                key={index}
-                display="flex"
-                justifyContent={
-                  message.role === "user" ? "flex-end" : "flex-start"
-                }
-              >
-                <Box
-                  bgcolor={message.role === "user" ? "#00B2FF" : "grey"}
-                  color="white"
-                  borderRadius="25px"
-                  maxWidth="75%"
-                  p={2.5}
-                >
-                  {message.content}
-                </Box>
-              </Box>
-            ))}
+            {messages.map(
+              (message, index) =>
+                (message.role === "user" || message.role === "assistant") && (
+                  <Box
+                    key={index}
+                    display="flex"
+                    justifyContent={
+                      message.role === "user" ? "flex-end" : "flex-start"
+                    }
+                  >
+                    <Box
+                      bgcolor={message.role === "user" ? "#00B2FF" : "grey"}
+                      color="white"
+                      borderRadius="25px"
+                      maxWidth="75%"
+                      p={2.5}
+                    >
+                      {message.content}
+                    </Box>
+                  </Box>
+                )
+            )}
             {loading && (
               <Box display="flex" justifyContent="flex-start">
                 <Box bgcolor="grey" borderRadius={16} p="14px">
