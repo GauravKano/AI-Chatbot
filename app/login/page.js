@@ -7,6 +7,7 @@ import {
   Typography,
   Button,
   InputAdornment,
+  useMediaQuery,
 } from "@mui/material";
 import { Divider } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -33,6 +34,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Error with Sign In");
+  const isSmallScreen = useMediaQuery("(max-width:500px)");
 
   //Change Show Password
   const changeShowPassword = () => {
@@ -107,19 +109,19 @@ const Login = () => {
         justifyContent="space-around"
         alignItems="center"
         maxWidth="500px"
-        maxHeight="550px"
+        maxHeight={isSmallScreen ? "100%" : "550px"}
         width="100%"
         height="100%"
         // border="1px solid black"
-        borderRadius="10px"
+        borderRadius={!isSmallScreen && "10px"}
         p="30px"
       >
         <Stack
           direction={"column"}
           justifyContent="center"
           alignItems="center"
-          gap="20px"
-          width="70%"
+          gap={isSmallScreen ? "30px" : "20px"}
+          width={isSmallScreen ? "80%" : "70%"}
         >
           {/* Header */}
           <Typography

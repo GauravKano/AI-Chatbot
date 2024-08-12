@@ -1,19 +1,23 @@
 "use client";
 
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
-import {
-  FaArrowLeftLong,
-  FaAnglesDown,
-  FaDoorOpen,
-  FaDeleteLeft,
-} from "react-icons/fa6";
+import { FaArrowLeftLong, FaAnglesDown, FaDeleteLeft } from "react-icons/fa6";
 import { ThreeDots } from "react-loader-spinner";
 import { auth } from "@/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { systemPrompt } from "../page";
+import { TbLogout } from "react-icons/tb";
 
 export default function Chatbot() {
   //Init the States, Refs, and Routers
@@ -24,6 +28,7 @@ export default function Chatbot() {
   const messagesContainer = useRef(null);
   const messageInput = useRef(null);
   const router = useRouter();
+  const isSmallScreen = useMediaQuery("(max-width:1000px)");
 
   //Handle the API
   const {
@@ -187,9 +192,9 @@ export default function Chatbot() {
         direction={"column"}
         maxWidth="1000px"
         width="100%"
-        height="95%"
+        height={isSmallScreen ? "100%" : "95%"}
         // border="1px solid black"
-        borderRadius="10px"
+        borderRadius={!isSmallScreen && "10px"}
       >
         {/* NavBar */}
         <Box
@@ -200,13 +205,17 @@ export default function Chatbot() {
           alignItems="center"
           backgroundColor="#CED4DA"
           color="#212529"
-          sx={{ borderTopLeftRadius: "10px", borderTopRightRadius: "10px" }}
+          sx={{
+            borderTopLeftRadius: !isSmallScreen && "10px",
+            borderTopRightRadius: !isSmallScreen && "10px",
+          }}
         >
           <Typography
             display="flex"
             alignItems="center"
             gap="10px"
             ml="10px"
+            color="#57636f"
             sx={{ cursor: "pointer" }}
             onClick={onGoBack}
           >
@@ -218,44 +227,38 @@ export default function Chatbot() {
             justifyContent="center"
             gap="15px"
           >
-            <Button
+            <IconButton
               sx={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                fontSize: "14px",
-                color: "#FFF",
-                bgcolor: "#8f9aa3",
-                "&:hover": {
-                  bgcolor: "#859099",
-                },
+                color: "#57636f",
+                bgcolor: "transparent",
                 borderRadius: "10px",
-                width: "40px",
-                height: "40px",
+                padding: "8px 20px",
+                // border: "1px solid black",
+                boxShadow: "0px 0px 2px black",
               }}
               onClick={clearMessage}
             >
-              <FaDeleteLeft style={{ width: "20px", height: "20px" }} />
-            </Button>
-            <Button
+              <FaDeleteLeft />
+            </IconButton>
+            <IconButton
               sx={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                fontSize: "14px",
-                color: "#FFF",
-                bgcolor: "#8f9aa3",
-                "&:hover": {
-                  bgcolor: "#859099",
-                },
+                color: "#57636f",
+                bgcolor: "transparent",
                 borderRadius: "10px",
-                width: "40px",
-                height: "40px",
+                padding: "8px 20px",
+                // border: "1px solid black",
+                boxShadow: "0px 0px 2px black",
               }}
               onClick={onSignOut}
             >
-              <FaDoorOpen style={{ width: "20px", height: "20px" }} />
-            </Button>
+              <TbLogout />
+            </IconButton>
           </Stack>
         </Box>
 
@@ -334,7 +337,7 @@ export default function Chatbot() {
               display="flex"
               justifyContent="center"
               alignItems="center"
-              bgcolor="#495057"
+              bgcolor="white"
               onClick={scrollClick}
               sx={{
                 boxShadow: "0px 0px 3px black",
@@ -347,11 +350,11 @@ export default function Chatbot() {
                 zIndex: 10,
                 cursor: "pointer",
                 "&:hover": {
-                  bgcolor: "#6C757D",
+                  bgcolor: "#F8F9FA",
                 },
               }}
             >
-              <FaAnglesDown style={{ color: "white" }} />
+              <FaAnglesDown style={{ color: "black" }} />
             </Box>
           )}
         </Box>
@@ -363,8 +366,8 @@ export default function Chatbot() {
           p="16px 20px"
           backgroundColor="#E3E6EA"
           sx={{
-            borderBottomLeftRadius: "10px",
-            borderBottomRightRadius: "10px",
+            borderBottomLeftRadius: !isSmallScreen && "10px",
+            borderBottomRightRadius: !isSmallScreen && "10px",
           }}
         >
           <TextField

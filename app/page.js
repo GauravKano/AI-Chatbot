@@ -7,6 +7,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import React from "react";
 import { useState, useEffect } from "react";
@@ -25,6 +26,7 @@ const Home = () => {
   const [disableChange, setDisableChange] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
   const router = useRouter();
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
 
   const choices = [
     {
@@ -175,11 +177,11 @@ const Home = () => {
         justifyContent="space-around"
         alignItems="center"
         maxWidth="600px"
-        maxHeight="600px"
+        maxHeight={isSmallScreen ? "100% " : "600px"}
         width="100%"
         height="100%"
         // border="1px solid black"
-        borderRadius="10px"
+        borderRadius={!isSmallScreen && "10px"}
         p="30px"
       >
         <Stack
@@ -187,7 +189,7 @@ const Home = () => {
           justifyContent="center"
           alignItems="center"
           gap="25px"
-          width="70%"
+          width={isSmallScreen ? "80%" : "70%"}
           maxHeight="100%"
         >
           <Typography variant="h4">Choose One:</Typography>

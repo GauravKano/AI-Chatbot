@@ -7,6 +7,7 @@ import {
   TextField,
   Button,
   Divider,
+  useMediaQuery,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ const Register = () => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Error with Sign Up");
   const [emailVerify, setEmailVerify] = useState(false);
+  const isSmallScreen = useMediaQuery("(max-width:500px)");
 
   //Handle Google Login
   const onGoogleLogin = async () => {
@@ -98,19 +100,19 @@ const Register = () => {
         justifyContent="space-around"
         alignItems="center"
         maxWidth="500px"
-        maxHeight="550px"
+        maxHeight={isSmallScreen ? "100%" : "550px"}
         width="100%"
         height="100%"
         // border="1px solid black"
-        borderRadius="10px"
+        borderRadius={!isSmallScreen && "10px"}
         p="30px"
       >
         <Stack
           direction={"column"}
           justifyContent="center"
           alignItems="center"
-          gap="20px"
-          width="70%"
+          gap={isSmallScreen ? "30px" : "20px"}
+          width={isSmallScreen ? "80%" : "70%"}
         >
           {/* Header */}
           <Typography
