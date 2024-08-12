@@ -192,7 +192,9 @@ const Home = () => {
           width={isSmallScreen ? "80%" : "70%"}
           maxHeight="100%"
         >
-          <Typography variant="h4">Choose One:</Typography>
+          <Typography variant="h4" fontSize="32px">
+            Choose One:
+          </Typography>
 
           {/* Show Error Message */}
           {showError && (
