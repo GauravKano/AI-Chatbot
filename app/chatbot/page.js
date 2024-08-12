@@ -133,13 +133,13 @@ export default function Chatbot() {
           setShowScroll(false);
         }
       };
-
+      // console.log("Hello World");
       messagesContainer.current.addEventListener("scroll", handleScroll);
 
       return () =>
         messagesContainer.current?.removeEventListener("scroll", handleScroll);
     }
-  }, []);
+  }, [messagesContainer.current]);
 
   //Handle the Scroll Click
   const scrollClick = () => {
