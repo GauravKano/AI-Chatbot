@@ -153,7 +153,7 @@ const Home = () => {
         <ThreeDots
           height="200px"
           width="200px"
-          color="black"
+          color="#212529"
           ariaLabel="loading"
         />
       </Box>
@@ -169,6 +169,8 @@ const Home = () => {
       alignItems="center"
     >
       <Stack
+        backgroundColor="#F0F3F5"
+        boxShadow="0px 0px 2px black"
         direction={"column"}
         justifyContent="space-around"
         alignItems="center"
@@ -176,7 +178,7 @@ const Home = () => {
         maxHeight="600px"
         width="100%"
         height="100%"
-        border="1px solid black"
+        // border="1px solid black"
         borderRadius="10px"
         p="30px"
       >
@@ -246,15 +248,20 @@ const Home = () => {
                 key={index}
                 value={index}
                 sx={{
+                  backgroundColor:
+                    index === charChoice ? "#CED4DA !important" : "#DADFE3",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "20px",
                   p: "10px 20px",
                   mb: "10px",
-                  border: "1px solid black !important",
+                  // border: "1px solid black !important",
                   borderRadius: "4px !important",
-                  boxShadow: index === charChoice && "0px 0px 2px black",
+                  boxShadow:
+                    index === charChoice
+                      ? "0px 0px 3px black"
+                      : "0px 0px 1px black",
                 }}
               >
                 <img src={person.link} width="30px" height="30px" />
@@ -275,10 +282,10 @@ const Home = () => {
               sx={{
                 width: "100%",
                 color: "#FFF",
-                bgcolor: "black",
+                bgcolor: "#495057",
                 p: "10px",
                 "&:hover": {
-                  bgcolor: "grey",
+                  bgcolor: "#6C757D",
                 },
                 borderRadius: "10px",
               }}
@@ -290,10 +297,10 @@ const Home = () => {
               sx={{
                 width: "100%",
                 color: "#FFF",
-                bgcolor: "black",
+                bgcolor: "#212529",
                 p: "10px",
                 "&:hover": {
-                  bgcolor: "grey",
+                  bgcolor: "#3F454C",
                 },
                 borderRadius: "10px",
               }}

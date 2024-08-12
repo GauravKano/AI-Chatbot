@@ -18,8 +18,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { FcGoogle } from "react-icons/fc";
-import { FaXmark, FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FaXmark, FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa6";
 
 //Create middleware for the chat
 //Put Name at nav
@@ -102,6 +101,8 @@ const Login = () => {
       alignItems="center"
     >
       <Stack
+        backgroundColor="#F0F3F5"
+        boxShadow="0px 0px 2px black"
         direction={"column"}
         justifyContent="space-around"
         alignItems="center"
@@ -109,7 +110,7 @@ const Login = () => {
         maxHeight="550px"
         width="100%"
         height="100%"
-        border="1px solid black"
+        // border="1px solid black"
         borderRadius="10px"
         p="30px"
       >
@@ -156,7 +157,11 @@ const Login = () => {
           {/* Email and Password */}
           <TextField
             placeholder="Email"
-            sx={{ width: "100%" }}
+            sx={{
+              width: "100%",
+              border: "1px solid #789CA0",
+              borderRadius: "4px",
+            }}
             value={emailInput}
             onChange={(e) => {
               setEmailInput(e.target.value);
@@ -165,7 +170,11 @@ const Login = () => {
           <TextField
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            sx={{ width: "100%" }}
+            sx={{
+              width: "100%",
+              border: "1px solid #789CA0",
+              borderRadius: "4px",
+            }}
             value={passwordInput}
             onChange={(e) => {
               setPasswordInput(e.target.value);
@@ -202,10 +211,10 @@ const Login = () => {
             sx={{
               width: "100%",
               color: "#FFF",
-              bgcolor: "black",
-              p: "10px 10px",
+              bgcolor: "#212529",
+              p: "10px",
               "&:hover": {
-                bgcolor: "grey",
+                bgcolor: "#3F454C",
               },
               borderRadius: "10px",
             }}
@@ -215,22 +224,33 @@ const Login = () => {
           </Button>
 
           <Divider sx={{ width: "100%", fontSize: "15px" }}>or</Divider>
+
           {/* Google Login */}
           <Stack
+            backgroundColor="#495057"
+            color="white"
+            boxShadow="0px 0px 1px black"
             direction={"row"}
             justifyContent="center"
             alignItems="center"
             gap="15px"
-            border="1px solid black"
+            // border="1px solid black"
             width="100%"
             p="13px 15px"
             borderRadius="10px"
             onClick={onGoogleLogin}
             mt="5px"
-            sx={{ cursor: "pointer" }}
+            sx={{
+              cursor: "pointer",
+              "&:hover": {
+                bgcolor: "#6C757D",
+              },
+            }}
           >
-            <FcGoogle style={{ width: "18px", height: "18px" }} />
-            <Typography>Sign In with Google</Typography>
+            <FaGoogle
+              style={{ width: "16px", height: "16px", color: "white" }}
+            />
+            <Typography fontSize="15px">Sign In with Google</Typography>
           </Stack>
 
           {/* Register Redirection */}

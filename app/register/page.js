@@ -18,8 +18,7 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/firebase";
-import { FcGoogle } from "react-icons/fc";
-import { FaXmark } from "react-icons/fa6";
+import { FaXmark, FaGoogle } from "react-icons/fa6";
 
 const Register = () => {
   const router = useRouter();
@@ -93,6 +92,8 @@ const Register = () => {
       alignItems="center"
     >
       <Stack
+        backgroundColor="#F0F3F5"
+        boxShadow="0px 0px 2px black"
         direction={"column"}
         justifyContent="space-around"
         alignItems="center"
@@ -100,7 +101,7 @@ const Register = () => {
         maxHeight="550px"
         width="100%"
         height="100%"
-        border="1px solid black"
+        // border="1px solid black"
         borderRadius="10px"
         p="30px"
       >
@@ -172,7 +173,11 @@ const Register = () => {
           {/* Email and Password */}
           <TextField
             placeholder="Email"
-            sx={{ width: "100%" }}
+            sx={{
+              width: "100%",
+              border: "1px solid #789CA0",
+              borderRadius: "4px",
+            }}
             value={emailInput}
             onChange={(e) => {
               setEmailInput(e.target.value);
@@ -180,7 +185,11 @@ const Register = () => {
           />
           <TextField
             placeholder="Password"
-            sx={{ width: "100%" }}
+            sx={{
+              width: "100%",
+              border: "1px solid #789CA0",
+              borderRadius: "4px",
+            }}
             value={passwordInput}
             onChange={(e) => {
               setPasswordInput(e.target.value);
@@ -192,10 +201,10 @@ const Register = () => {
             sx={{
               width: "100%",
               color: "#FFF",
-              bgcolor: "black",
-              p: "10px 10px",
+              bgcolor: "#212529",
+              p: "10px",
               "&:hover": {
-                bgcolor: "grey",
+                bgcolor: "#3F454C",
               },
               borderRadius: "10px",
             }}
@@ -205,22 +214,33 @@ const Register = () => {
           </Button>
 
           <Divider sx={{ width: "100%", fontSize: "15px" }}>or</Divider>
+
           {/* Google Sign In */}
           <Stack
+            backgroundColor="#495057"
+            color="white"
+            boxShadow="0px 0px 1px black"
             direction={"row"}
             justifyContent="center"
             alignItems="center"
             gap="15px"
-            border="1px solid black"
+            // border="1px solid black"
             width="100%"
             p="13px 15px"
             borderRadius="10px"
             onClick={onGoogleLogin}
             mt="5px"
-            sx={{ cursor: "pointer" }}
+            sx={{
+              cursor: "pointer",
+              "&:hover": {
+                bgcolor: "#6C757D",
+              },
+            }}
           >
-            <FcGoogle style={{ width: "18px", height: "18px" }} />
-            <Typography>Sign In with Google</Typography>
+            <FaGoogle
+              style={{ width: "16px", height: "16px", color: "white" }}
+            />
+            <Typography fontSize="15px">Sign In with Google</Typography>
           </Stack>
 
           {/* Login Redirection */}

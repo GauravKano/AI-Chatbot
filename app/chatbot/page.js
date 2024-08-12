@@ -3,7 +3,12 @@
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
-import { FaArrowLeftLong, FaAnglesDown } from "react-icons/fa6";
+import {
+  FaArrowLeftLong,
+  FaAnglesDown,
+  FaDoorOpen,
+  FaDeleteLeft,
+} from "react-icons/fa6";
 import { ThreeDots } from "react-loader-spinner";
 import { auth } from "@/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
@@ -162,7 +167,7 @@ export default function Chatbot() {
         <ThreeDots
           height="200px"
           width="200px"
-          color="black"
+          color="#212529"
           ariaLabel="loading"
         />
       </Box>
@@ -178,11 +183,12 @@ export default function Chatbot() {
       alignItems="center"
     >
       <Stack
+        boxShadow="0px 0px 2px black"
         direction={"column"}
         maxWidth="1000px"
         width="100%"
         height="95%"
-        border="1px solid black"
+        // border="1px solid black"
         borderRadius="10px"
       >
         {/* NavBar */}
@@ -192,6 +198,9 @@ export default function Chatbot() {
           display="flex"
           justifyContent="space-between"
           alignItems="center"
+          backgroundColor="#CED4DA"
+          color="#212529"
+          sx={{ borderTopLeftRadius: "10px", borderTopRightRadius: "10px" }}
         >
           <Typography
             display="flex"
@@ -211,39 +220,48 @@ export default function Chatbot() {
           >
             <Button
               sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
                 fontSize: "14px",
                 color: "#FFF",
-                bgcolor: "#00B2FF",
-                p: "8px 20px",
+                bgcolor: "#8f9aa3",
                 "&:hover": {
-                  bgcolor: "#0075FF",
+                  bgcolor: "#859099",
                 },
-                borderRadius: "8px",
+                borderRadius: "10px",
+                width: "40px",
+                height: "40px",
               }}
               onClick={clearMessage}
             >
-              Clear
+              <FaDeleteLeft style={{ width: "20px", height: "20px" }} />
             </Button>
             <Button
               sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
                 fontSize: "14px",
                 color: "#FFF",
-                bgcolor: "#00B2FF",
-                p: "8px 16px",
+                bgcolor: "#8f9aa3",
                 "&:hover": {
-                  bgcolor: "#0075FF",
+                  bgcolor: "#859099",
                 },
-                borderRadius: "8px",
+                borderRadius: "10px",
+                width: "40px",
+                height: "40px",
               }}
               onClick={onSignOut}
             >
-              Sign-Out
+              <FaDoorOpen style={{ width: "20px", height: "20px" }} />
             </Button>
           </Stack>
         </Box>
 
         {/* Messages Display */}
         <Box
+          backgroundColor="#F0F3F5"
           borderBottom="1px solid black"
           maxHeight="100%"
           flexGrow={1}
@@ -285,7 +303,7 @@ export default function Chatbot() {
                     }
                   >
                     <Box
-                      bgcolor={message.role === "user" ? "#00B2FF" : "grey"}
+                      bgcolor={message.role === "user" ? "#363c41" : "grey"}
                       color="white"
                       borderRadius="25px"
                       maxWidth="75%"
@@ -316,7 +334,7 @@ export default function Chatbot() {
               display="flex"
               justifyContent="center"
               alignItems="center"
-              bgcolor="#424242"
+              bgcolor="#495057"
               onClick={scrollClick}
               sx={{
                 boxShadow: "0px 0px 3px black",
@@ -328,6 +346,9 @@ export default function Chatbot() {
                 borderRadius: "50%",
                 zIndex: 10,
                 cursor: "pointer",
+                "&:hover": {
+                  bgcolor: "#6C757D",
+                },
               }}
             >
               <FaAnglesDown style={{ color: "white" }} />
@@ -336,7 +357,16 @@ export default function Chatbot() {
         </Box>
 
         {/* Message Feature */}
-        <Stack direction={"row"} spacing={2} p="16px 20px">
+        <Stack
+          direction={"row"}
+          spacing={2}
+          p="16px 20px"
+          backgroundColor="#E3E6EA"
+          sx={{
+            borderBottomLeftRadius: "10px",
+            borderBottomRightRadius: "10px",
+          }}
+        >
           <TextField
             ref={messageInput}
             disabled={isLoading}
@@ -352,6 +382,7 @@ export default function Chatbot() {
               }
             }}
             sx={{
+              backgroundColor: "#ECEFF2",
               "&::-webkit-scrollbar": {
                 width: "8px",
               },
@@ -372,10 +403,10 @@ export default function Chatbot() {
             sx={{
               fontSize: "14px",
               color: "#FFF",
-              bgcolor: "#00B2FF",
+              bgcolor: "#212529",
               p: "10px 20px",
               "&:hover": {
-                bgcolor: "#0075FF",
+                bgcolor: "#3F454C",
               },
               borderRadius: "10px",
             }}
