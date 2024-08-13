@@ -160,11 +160,26 @@ export default function Chatbot() {
     });
   };
 
+  //Handle vh on mobile
+  useEffect(() => {
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVh();
+
+    window.addEventListener("resize", setVh);
+
+    return () => window.removeEventListener("resize", setVh);
+  }, []);
+
+  // Show loading during auth check
   if (showLoading) {
     return (
       <Box
         width="100vw"
-        height="100vh"
+        height="calc(var(--vh, 1vh) * 100)"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -182,11 +197,12 @@ export default function Chatbot() {
   return (
     <Box
       width="100vw"
-      height="100vh"
+      height="calc(var(--vh, 1vh) * 100)"
       display="flex"
       justifyContent="center"
       alignItems="center"
     >
+      {/* Display */}
       <Stack
         boxShadow="0px 0px 2px black"
         direction={"column"}

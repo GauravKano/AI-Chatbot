@@ -85,14 +85,29 @@ const Register = () => {
     return () => unsubscribe();
   }, [router]);
 
+  //Handle vh on mobile
+  useEffect(() => {
+    const setVh = () => {
+      const vh = window.innerHeight;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVh();
+
+    window.addEventListener("resize", setVh);
+
+    return () => window.removeEventListener("resize", setVh);
+  }, []);
+
   return (
     <Box
       width="100vw"
-      height="100vh"
+      height="calc(var(--vh, 1vh) * 100)"
       display="flex"
       justifyContent="center"
       alignItems="center"
     >
+      {/* Display */}
       <Stack
         backgroundColor="#F0F3F5"
         boxShadow="0px 0px 2px black"

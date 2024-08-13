@@ -28,6 +28,7 @@ const Home = () => {
   const router = useRouter();
   const isSmallScreen = useMediaQuery("(max-width:600px)");
 
+  //List of celebs
   const choices = [
     {
       link: "./images/gordon.png",
@@ -107,6 +108,7 @@ const Home = () => {
     },
   ];
 
+  //Reroute non users
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setShowLoading(true);
@@ -120,6 +122,21 @@ const Home = () => {
     return () => unsubscribe();
   }, [router]);
 
+  //Handle vh in mobile
+  useEffect(() => {
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVh();
+
+    window.addEventListener("resize", setVh);
+
+    return () => window.removeEventListener("resize", setVh);
+  }, []);
+
+  //Handle Sign out
   const onSignOut = async () => {
     try {
       await signOut(auth);
@@ -128,6 +145,7 @@ const Home = () => {
     }
   };
 
+  //Handle the Submit Button
   const onSubmit = () => {
     try {
       setDisableChange(true);
@@ -143,11 +161,12 @@ const Home = () => {
     }
   };
 
+  //Show loading screen during auth check
   if (showLoading) {
     return (
       <Box
         width="100vw"
-        height="100vh"
+        height="calc(var(--vh, 1vh) * 100)"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -165,11 +184,12 @@ const Home = () => {
   return (
     <Box
       width="100vw"
-      height="100vh"
+      height="calc(var(--vh, 1vh) * 100)"
       display="flex"
       justifyContent="center"
       alignItems="center"
     >
+      {/* Display */}
       <Stack
         backgroundColor="#F0F3F5"
         boxShadow="0px 0px 2px black"
@@ -220,6 +240,7 @@ const Home = () => {
             </Box>
           )}
 
+          {/* Show celebs */}
           <ToggleButtonGroup
             orientation="vertical"
             value={charChoice}
@@ -275,6 +296,8 @@ const Home = () => {
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
+
+          {/* Show Navigation Buttons */}
           <Stack
             direction="row"
             justifyContent="center"
